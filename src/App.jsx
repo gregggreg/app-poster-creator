@@ -6,10 +6,6 @@ import './App.css'
 
 function Home() {
   const [url, setUrl] = useState('')
-  const [screenshotUrl, setScreenshotUrl] = useState('')
-  const [logoUrl, setLogoUrl] = useState(() => {
-    return localStorage.getItem('companyLogoUrl') || ''
-  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -21,16 +17,6 @@ function Home() {
   const extractAppId = (url) => {
     const match = url.match(/id(\d+)/)
     return match ? match[1] : null
-  }
-
-  const handleLogoUrlChange = (e) => {
-    const newLogoUrl = e.target.value
-    setLogoUrl(newLogoUrl)
-    if (newLogoUrl) {
-      localStorage.setItem('companyLogoUrl', newLogoUrl)
-    } else {
-      localStorage.removeItem('companyLogoUrl')
-    }
   }
 
   const handleSubmit = async (e) => {
@@ -79,11 +65,12 @@ function Home() {
       const posterData = {
         name: appData.trackName,
         tagline: appData.description.split('.')[0],
-        screenshot: screenshotUrl || screenshot,
+        screenshot: screenshot,
+        screenshots: appData.screenshotUrls || [],
         appStoreUrl: url,
         iconUrl: appData.artworkUrl512,
         sellerName: appData.sellerName,
-        companyLogo: logoUrl
+        companyLogo: localStorage.getItem('companyLogoUrl') || ''
       }
       
       console.log('Poster data:', posterData)
@@ -110,20 +97,6 @@ function Home() {
           onChange={(e) => setUrl(e.target.value)}
           className="url-input"
           required
-        />
-        <input
-          type="url"
-          placeholder="Alternative screenshot URL (optional)"
-          value={screenshotUrl}
-          onChange={(e) => setScreenshotUrl(e.target.value)}
-          className="url-input"
-        />
-        <input
-          type="url"
-          placeholder="Company logo URL (optional)"
-          value={logoUrl}
-          onChange={handleLogoUrlChange}
-          className="url-input"
         />
         <button type="submit" disabled={loading} className="submit-button">
           {loading ? 'Loading...' : 'Create Poster'}

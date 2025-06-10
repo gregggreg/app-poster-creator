@@ -11,10 +11,24 @@ function Poster() {
   const [frameStyle, setFrameStyle] = useState('none')
   const [framePadding, setFramePadding] = useState('minimal')
   const [cornerStyle, setCornerStyle] = useState('match')
+  const [screenshotUrl, setScreenshotUrl] = useState('')
+  const [companyLogoUrl, setCompanyLogoUrl] = useState('')
+  const [tagline, setTagline] = useState('')
+  const [screenshotIndex, setScreenshotIndex] = useState(0)
+  const [availableScreenshots, setAvailableScreenshots] = useState([])
   const appData = location.state
 
   useEffect(() => {
     console.log('Poster appData:', appData)
+    
+    // Initialize from passed data
+    if (appData) {
+      const screenshots = appData.screenshots || []
+      setAvailableScreenshots(screenshots)
+      setScreenshotUrl(appData.screenshot || '')
+      setCompanyLogoUrl(appData.companyLogo || '')
+      setTagline(appData.tagline || '')
+    }
     
     // Update document title for PDF filename
     if (appData?.name) {
@@ -39,6 +53,23 @@ function Poster() {
       document.title = 'App Store Poster Creator'
     }
   }, [appData])
+
+  // Handle screenshot navigation
+  const handlePreviousScreenshot = () => {
+    if (availableScreenshots.length > 0) {
+      const newIndex = screenshotIndex > 0 ? screenshotIndex - 1 : availableScreenshots.length - 1
+      setScreenshotIndex(newIndex)
+      setScreenshotUrl(availableScreenshots[newIndex])
+    }
+  }
+
+  const handleNextScreenshot = () => {
+    if (availableScreenshots.length > 0) {
+      const newIndex = screenshotIndex < availableScreenshots.length - 1 ? screenshotIndex + 1 : 0
+      setScreenshotIndex(newIndex)
+      setScreenshotUrl(availableScreenshots[newIndex])
+    }
+  }
 
   const handleImageLoad = (e) => {
     const img = e.target
@@ -130,6 +161,72 @@ function Poster() {
           </select>
         </div>
         
+        <div className="option-group">
+          <label>Tagline:</label>
+          <textarea
+            placeholder="App tagline"
+            value={tagline}
+            onChange={(e) => setTagline(e.target.value)}
+            className="textarea-small"
+            rows="2"
+          />
+        </div>
+        
+        <div className="option-group">
+          <label>Screenshot:</label>
+          {availableScreenshots.length > 1 && (
+            <div className="screenshot-nav">
+              <button 
+                onClick={handlePreviousScreenshot}
+                className="nav-button"
+                title="Previous screenshot"
+              >
+                ←
+              </button>
+              <span className="screenshot-counter">
+                {screenshotIndex + 1} / {availableScreenshots.length}
+              </span>
+              <button 
+                onClick={handleNextScreenshot}
+                className="nav-button"
+                title="Next screenshot"
+              >
+                →
+              </button>
+            </div>
+          )}
+          <input
+            type="url"
+            placeholder="Custom screenshot URL"
+            value={screenshotUrl}
+            onChange={(e) => {
+              setScreenshotUrl(e.target.value)
+              // Clear index when manually entering URL
+              setScreenshotIndex(-1)
+            }}
+            className="url-input-small"
+          />
+        </div>
+        
+        <div className="option-group">
+          <label>Company Logo URL:</label>
+          <input
+            type="url"
+            placeholder="Logo URL"
+            value={companyLogoUrl}
+            onChange={(e) => {
+              setCompanyLogoUrl(e.target.value)
+              // Save to localStorage
+              if (e.target.value) {
+                localStorage.setItem('companyLogoUrl', e.target.value)
+              } else {
+                localStorage.removeItem('companyLogoUrl')
+              }
+            }}
+            className="url-input-small"
+          />
+        </div>
+        
         <div className="sidebar-buttons">
           <button onClick={() => navigate('/')} className="secondary-button">
             Start Over
@@ -158,7 +255,7 @@ function Poster() {
             )}
             <div className="app-text">
               <h1 className="app-title">{appData.name}</h1>
-              <p className="app-tagline">{appData.tagline}</p>
+              <p className="app-tagline">{tagline}</p>
             </div>
           </div>
         </div>
@@ -181,12 +278,12 @@ function Poster() {
                             cornerStyle === 'match' ? `${35 - getPaddingValue()}px` : '16px'
               }}
             >
-              {appData.screenshot ? (
+              {screenshotUrl ? (
                 <img 
-                  src={appData.screenshot} 
+                  src={screenshotUrl} 
                   alt={`${appData.name} screenshot`}
                   onError={(e) => {
-                    console.error('Failed to load screenshot:', appData.screenshot)
+                    console.error('Failed to load screenshot:', screenshotUrl)
                     e.target.style.display = 'none'
                   }}
                   onLoad={handleImageLoad}
@@ -203,8 +300,8 @@ function Poster() {
         
         <div className="poster-footer">
           <div className="company-info">
-            {appData.companyLogo && (
-              <img src={appData.companyLogo} alt="Company logo" className="company-logo" />
+            {companyLogoUrl && (
+              <img src={companyLogoUrl} alt="Company logo" className="company-logo" />
             )}
           </div>
           <div className="qr-container">
