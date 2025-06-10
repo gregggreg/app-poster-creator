@@ -16,6 +16,7 @@ function Poster() {
   const [tagline, setTagline] = useState('')
   const [screenshotIndex, setScreenshotIndex] = useState(0)
   const [availableScreenshots, setAvailableScreenshots] = useState([])
+  const [deviceType, setDeviceType] = useState('iphone')
   const appData = location.state
 
   useEffect(() => {
@@ -23,9 +24,6 @@ function Poster() {
     
     // Initialize from passed data
     if (appData) {
-      const screenshots = appData.screenshots || []
-      setAvailableScreenshots(screenshots)
-      setScreenshotUrl(appData.screenshot || '')
       setCompanyLogoUrl(appData.companyLogo || '')
       setTagline(appData.tagline || '')
     }
@@ -54,20 +52,43 @@ function Poster() {
     }
   }, [appData])
 
+  // Handle device type changes and screenshot updates
+  useEffect(() => {
+    if (appData) {
+      const screenshots = deviceType === 'iphone' 
+        ? (appData.screenshots || [])
+        : (appData.ipadScreenshots || [])
+      
+      setAvailableScreenshots(screenshots)
+      setScreenshotIndex(0) // Reset to first screenshot
+      setScreenshotUrl(screenshots[0] || '')
+      
+      console.log(`Switched to ${deviceType} - ${screenshots.length} screenshots available`)
+    }
+  }, [deviceType, appData])
+
   // Handle screenshot navigation
   const handlePreviousScreenshot = () => {
-    if (availableScreenshots.length > 0) {
-      const newIndex = screenshotIndex > 0 ? screenshotIndex - 1 : availableScreenshots.length - 1
+    const screenshots = deviceType === 'iphone' 
+      ? (appData.screenshots || [])
+      : (appData.ipadScreenshots || [])
+    
+    if (screenshots.length > 0) {
+      const newIndex = screenshotIndex > 0 ? screenshotIndex - 1 : screenshots.length - 1
       setScreenshotIndex(newIndex)
-      setScreenshotUrl(availableScreenshots[newIndex])
+      setScreenshotUrl(screenshots[newIndex])
     }
   }
 
   const handleNextScreenshot = () => {
-    if (availableScreenshots.length > 0) {
-      const newIndex = screenshotIndex < availableScreenshots.length - 1 ? screenshotIndex + 1 : 0
+    const screenshots = deviceType === 'iphone' 
+      ? (appData.screenshots || [])
+      : (appData.ipadScreenshots || [])
+    
+    if (screenshots.length > 0) {
+      const newIndex = screenshotIndex < screenshots.length - 1 ? screenshotIndex + 1 : 0
       setScreenshotIndex(newIndex)
-      setScreenshotUrl(availableScreenshots[newIndex])
+      setScreenshotUrl(screenshots[newIndex])
     }
   }
 
@@ -94,21 +115,47 @@ function Poster() {
   // Calculate frame dimensions based on aspect ratio
   const getFrameDimensions = () => {
     if (!imageAspectRatio) {
-      return { width: 280, height: 570 } // Default dimensions
+      return deviceType === 'ipad' 
+        ? { width: 400, height: 550 } // Default iPad dimensions
+        : { width: 280, height: 570 } // Default iPhone dimensions
     }
     
-    // Base width for the frame
-    const baseWidth = 280
     const padding = getPaddingValue() * 2 // Total padding
-    const contentWidth = baseWidth - padding
+    const isLandscape = imageAspectRatio > 1
     
-    // Calculate height based on aspect ratio
-    const contentHeight = contentWidth / imageAspectRatio
-    const frameHeight = contentHeight + padding // Just add padding
-    
-    return { 
-      width: baseWidth, 
-      height: Math.min(frameHeight, 650) // Max height of 650px
+    if (deviceType === 'ipad') {
+      // iPad dimensions
+      if (isLandscape) {
+        // Landscape iPad
+        const baseWidth = 500
+        const contentWidth = baseWidth - padding
+        const contentHeight = contentWidth / imageAspectRatio
+        const frameHeight = contentHeight + padding
+        return { 
+          width: baseWidth, 
+          height: Math.min(frameHeight, 400)
+        }
+      } else {
+        // Portrait iPad
+        const baseWidth = 400
+        const contentWidth = baseWidth - padding
+        const contentHeight = contentWidth / imageAspectRatio
+        const frameHeight = contentHeight + padding
+        return { 
+          width: baseWidth, 
+          height: Math.min(frameHeight, 550)
+        }
+      }
+    } else {
+      // iPhone dimensions (always portrait)
+      const baseWidth = 280
+      const contentWidth = baseWidth - padding
+      const contentHeight = contentWidth / imageAspectRatio
+      const frameHeight = contentHeight + padding
+      return { 
+        width: baseWidth, 
+        height: Math.min(frameHeight, 650)
+      }
     }
   }
 
@@ -122,15 +169,37 @@ function Poster() {
         <h3>Poster Settings</h3>
         
         <div className="option-group">
+          <label>Device Type:</label>
+          <select 
+            value={deviceType} 
+            onChange={(e) => {
+              const newDeviceType = e.target.value
+              setDeviceType(newDeviceType)
+              setScreenshotIndex(0) // Reset to first screenshot
+              // Update screenshot URL to first screenshot of new device type
+              const screenshots = newDeviceType === 'iphone' 
+                ? (appData.screenshots || [])
+                : (appData.ipadScreenshots || [])
+              setScreenshotUrl(screenshots[0] || '')
+            }}
+            className="select-input"
+          >
+            <option value="iphone">iPhone</option>
+            <option value="ipad">iPad</option>
+          </select>
+        </div>
+        
+        <div className="option-group">
           <label>Frame Style:</label>
           <select 
             value={frameStyle} 
             onChange={(e) => setFrameStyle(e.target.value)}
             className="select-input"
           >
-            <option value="none">No Notch</option>
-            <option value="notch">Classic Notch</option>
-            <option value="dynamic-island">Dynamic Island</option>
+            <option value="no-frame">No Frame</option>
+            <option value="none">Device Frame</option>
+            <option value="notch">Device Frame with Notch</option>
+            <option value="dynamic-island">Device Frame with Dynamic Island</option>
           </select>
         </div>
         
@@ -261,27 +330,21 @@ function Poster() {
         </div>
         
         <div className="screenshot-container">
-          <div 
-            className={`iphone-frame ${frameStyle}`}
-            style={{ 
+          {frameStyle === 'no-frame' ? (
+            // No frame - just the screenshot
+            <div style={{ 
               width: `${frameDimensions.width}px`, 
-              height: `${frameDimensions.height}px`,
-              padding: `${getPaddingValue()}px`
-            }}
-          >
-            <div 
-              className="iphone-screen"
-              style={{
-                borderRadius: cornerStyle === 'square' ? '0' : 
-                            cornerStyle === 'slight' ? '8px' : 
-                            cornerStyle === 'rounded' ? '16px' :
-                            cornerStyle === 'match' ? `${35 - getPaddingValue()}px` : '16px'
-              }}
-            >
+              height: 'auto',
+              borderRadius: cornerStyle === 'square' ? '0' : 
+                          cornerStyle === 'slight' ? '8px' : 
+                          cornerStyle === 'rounded' ? '16px' : '8px',
+              overflow: 'hidden'
+            }}>
               {screenshotUrl ? (
                 <img 
                   src={screenshotUrl} 
                   alt={`${appData.name} screenshot`}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
                   onError={(e) => {
                     console.error('Failed to load screenshot:', screenshotUrl)
                     e.target.style.display = 'none'
@@ -289,13 +352,50 @@ function Poster() {
                   onLoad={handleImageLoad}
                 />
               ) : (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                <div style={{ padding: '20px', textAlign: 'center', color: '#666', background: '#f5f5f7' }}>
                   <p>No screenshot available</p>
                   <p style={{ fontSize: '12px' }}>Check console for debug info</p>
                 </div>
               )}
             </div>
-          </div>
+          ) : (
+            // With device frame
+            <div 
+              className={`device-frame ${deviceType}-frame ${frameStyle}`}
+              style={{ 
+                width: `${frameDimensions.width}px`, 
+                height: `${frameDimensions.height}px`,
+                padding: `${getPaddingValue()}px`
+              }}
+            >
+              <div 
+                className="iphone-screen"
+                style={{
+                  borderRadius: cornerStyle === 'square' ? '0' : 
+                              cornerStyle === 'slight' ? '8px' : 
+                              cornerStyle === 'rounded' ? '16px' :
+                              cornerStyle === 'match' ? `${deviceType === 'ipad' ? 20 - getPaddingValue() : 35 - getPaddingValue()}px` : '16px'
+                }}
+              >
+                {screenshotUrl ? (
+                  <img 
+                    src={screenshotUrl} 
+                    alt={`${appData.name} screenshot`}
+                    onError={(e) => {
+                      console.error('Failed to load screenshot:', screenshotUrl)
+                      e.target.style.display = 'none'
+                    }}
+                    onLoad={handleImageLoad}
+                  />
+                ) : (
+                  <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                    <p>No screenshot available</p>
+                    <p style={{ fontSize: '12px' }}>Check console for debug info</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="poster-footer">

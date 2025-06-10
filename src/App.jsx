@@ -67,6 +67,7 @@ function Home() {
         tagline: appData.description.split('.')[0],
         screenshot: screenshot,
         screenshots: appData.screenshotUrls || [],
+        ipadScreenshots: appData.ipadScreenshotUrls || [],
         appStoreUrl: url,
         iconUrl: appData.artworkUrl512,
         sellerName: appData.sellerName,

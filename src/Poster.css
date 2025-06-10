@@ -75,20 +75,27 @@
   justify-content: center;
   align-items: center;
   margin: 10px 0;
-  max-height: 600px;
+  max-height: 650px;
 }
 
-.iphone-frame {
+.device-frame {
   position: relative;
   background: #000;
-  border-radius: 35px;
   padding: 8px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
               inset 0 0 0 2px #333;
   transition: all 0.3s ease;
 }
 
-/* Classic Notch */
+.iphone-frame {
+  border-radius: 35px;
+}
+
+.ipad-frame {
+  border-radius: 20px;
+}
+
+/* Classic Notch - iPhone only */
 .iphone-frame.notch .iphone-screen::before {
   content: '';
   position: absolute;
@@ -102,7 +109,7 @@
   z-index: 10;
 }
 
-/* Dynamic Island */
+/* Dynamic Island - iPhone only */
 .iphone-frame.dynamic-island .iphone-screen::after {
   content: '';
   position: absolute;
@@ -115,6 +122,12 @@
   background: #000;
   border-radius: 12px;
   z-index: 10;
+}
+
+/* Hide notch/island for iPad */
+.ipad-frame.notch .iphone-screen::before,
+.ipad-frame.dynamic-island .iphone-screen::after {
+  display: none;
 }
 
 
@@ -366,7 +379,6 @@
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    color-adjust: exact !important;
   }
   
   /* Reset page styling */
