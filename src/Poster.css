@@ -1,0 +1,416 @@
+.poster-container {
+  min-height: 100vh;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f5f5f7;
+}
+
+@media screen {
+  .poster-container {
+    background-color: #f5f5f7;
+  }
+}
+
+.print-background {
+  display: none;
+}
+
+.poster {
+  width: 8.5in;
+  height: 11in;
+  background: white;
+  padding: 0.5in;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.poster-header {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.app-header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 600px;
+}
+
+.app-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.app-text {
+  flex: 1;
+}
+
+.app-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin: 0 0 10px 0;
+  text-align: left;
+}
+
+.app-tagline {
+  font-size: 16px;
+  color: #6e6e73;
+  margin: 0;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.screenshot-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  max-height: 600px;
+}
+
+.iphone-frame {
+  position: relative;
+  background: #000;
+  border-radius: 35px;
+  padding: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
+              inset 0 0 0 2px #333;
+  transition: all 0.3s ease;
+}
+
+/* Classic Notch */
+.iphone-frame.notch .iphone-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25%;
+  height: 16px;
+  background: #000;
+  border-radius: 0 0 10px 10px;
+  z-index: 10;
+}
+
+/* Dynamic Island */
+.iphone-frame.dynamic-island .iphone-screen::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25%;
+  max-width: 70px;
+  height: 20px;
+  background: #000;
+  border-radius: 12px;
+  z-index: 10;
+}
+
+
+.iphone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: black;
+}
+
+
+.iphone-screen img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.poster-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.company-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.company-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.seller-name {
+  font-size: 14px;
+  color: #6e6e73;
+  margin: 0;
+  font-weight: 500;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.qr-code {
+  width: 120px;
+  height: 120px;
+}
+
+.app-store-badge {
+  width: 120px;
+  height: auto;
+  margin-top: 8px;
+}
+
+.controls-sidebar {
+  width: 250px;
+  height: fit-content;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+}
+
+.controls-sidebar h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d1d1f;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e5e7;
+}
+
+.controls-sidebar .option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.controls-sidebar .option-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.controls-sidebar .select-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #d2d2d7;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.controls-sidebar .select-input:focus {
+  border-color: #0071e3;
+}
+
+.sidebar-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e7;
+}
+
+.sidebar-buttons button {
+  width: 100%;
+  padding: 10px 20px;
+  font-size: 15px;
+}
+
+.print-note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #6e6e73;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.button-container {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.print-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: #0071e3;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.print-button:hover {
+  background-color: #0077ed;
+}
+
+.secondary-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0071e3;
+  background-color: white;
+  border: 2px solid #0071e3;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background-color: #f5f5f7;
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* Reset page styling */
+  @page {
+    size: letter;
+    margin: 0;
+  }
+  
+  html {
+    background: white !important;
+    height: 100%;
+  }
+  
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    height: 100%;
+  }
+
+  #root {
+    background: white !important;
+    height: 100%;
+  }
+
+  .poster-container {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    background: white !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  /* White background fallback */
+  .print-background {
+    display: none !important;
+  }
+
+  .poster {
+    box-shadow: none;
+    margin: 0;
+    width: 8.5in !important;
+    height: 11in !important;
+    background: white !important;
+    page-break-inside: avoid;
+    position: relative;
+  }
+  
+  .screenshot-container {
+    background: white !important;
+  }
+  
+  /* Ensure footer elements are visible and positioned correctly */
+  .poster-footer {
+    margin-top: auto !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .company-info,
+  .qr-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .company-logo {
+    display: block !important;
+    height: 40px !important;
+    width: auto !important;
+    max-width: 150px !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .qr-code {
+    display: block !important;
+    width: 120px !important;
+    height: 120px !important;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  .app-store-badge {
+    display: block !important;
+    width: 120px !important;
+    height: auto !important;
+  }
+  
+  /* Safari-specific image handling */
+  img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    page-break-inside: avoid !important;
+  }
+
+  .iphone-frame {
+    background: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .iphone-screen {
+    background: #000 !important;
+  }
+
+  .controls-sidebar {
+    display: none;
+  }
+
+  @page {
+    size: letter;
+    margin: 0;
+  }
+}

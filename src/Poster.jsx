@@ -1,0 +1,229 @@
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import QRCode from 'qrcode'
+import './Poster.css'
+
+function Poster() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [qrCodeUrl, setQrCodeUrl] = useState('')
+  const [imageAspectRatio, setImageAspectRatio] = useState(null)
+  const [frameStyle, setFrameStyle] = useState('none')
+  const [framePadding, setFramePadding] = useState('normal')
+  const [cornerStyle, setCornerStyle] = useState('rounded')
+  const appData = location.state
+
+  useEffect(() => {
+    console.log('Poster appData:', appData)
+    
+    // Update document title for PDF filename
+    if (appData?.name) {
+      document.title = `${appData.name} - App Store Poster`
+    }
+    
+    if (appData?.appStoreUrl) {
+      QRCode.toDataURL(appData.appStoreUrl, {
+        width: 200,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
+        .then(url => setQrCodeUrl(url))
+        .catch(err => console.error(err))
+    }
+    
+    // Cleanup - restore original title when component unmounts
+    return () => {
+      document.title = 'App Store Poster Creator'
+    }
+  }, [appData])
+
+  const handleImageLoad = (e) => {
+    const img = e.target
+    const aspectRatio = img.naturalWidth / img.naturalHeight
+    setImageAspectRatio(aspectRatio)
+    console.log('Screenshot loaded successfully, aspect ratio:', aspectRatio)
+  }
+
+  if (!appData) {
+    return <div>No app data available</div>
+  }
+
+  // Get padding value based on selection
+  const getPaddingValue = () => {
+    switch(framePadding) {
+      case 'minimal': return 12
+      case 'comfortable': return 20
+      default: return 16
+    }
+  }
+
+  // Calculate frame dimensions based on aspect ratio
+  const getFrameDimensions = () => {
+    if (!imageAspectRatio) {
+      return { width: 280, height: 570 } // Default dimensions
+    }
+    
+    // Base width for the frame
+    const baseWidth = 280
+    const padding = getPaddingValue() * 2 // Total padding
+    const contentWidth = baseWidth - padding
+    
+    // Calculate height based on aspect ratio
+    const contentHeight = contentWidth / imageAspectRatio
+    const frameHeight = contentHeight + padding // Just add padding
+    
+    return { 
+      width: baseWidth, 
+      height: Math.min(frameHeight, 650) // Max height of 650px
+    }
+  }
+
+  const frameDimensions = getFrameDimensions()
+
+  return (
+    <>
+      <div className="print-background"></div>
+      <div className="poster-container">
+      <div className="controls-sidebar">
+        <h3>Poster Settings</h3>
+        
+        <div className="option-group">
+          <label>Frame Style:</label>
+          <select 
+            value={frameStyle} 
+            onChange={(e) => setFrameStyle(e.target.value)}
+            className="select-input"
+          >
+            <option value="none">No Notch</option>
+            <option value="notch">Classic Notch</option>
+            <option value="dynamic-island">Dynamic Island</option>
+          </select>
+        </div>
+        
+        <div className="option-group">
+          <label>Content Padding:</label>
+          <select 
+            value={framePadding} 
+            onChange={(e) => setFramePadding(e.target.value)}
+            className="select-input"
+          >
+            <option value="minimal">Minimal (12px)</option>
+            <option value="normal">Normal (16px)</option>
+            <option value="comfortable">Comfortable (20px)</option>
+          </select>
+        </div>
+        
+        <div className="option-group">
+          <label>Screen Corners:</label>
+          <select 
+            value={cornerStyle} 
+            onChange={(e) => setCornerStyle(e.target.value)}
+            className="select-input"
+          >
+            <option value="square">Square (No rounding)</option>
+            <option value="slight">Slight (8px)</option>
+            <option value="rounded">Rounded (16px)</option>
+            <option value="match">Match Frame</option>
+          </select>
+        </div>
+        
+        <div className="sidebar-buttons">
+          <button onClick={() => navigate('/')} className="secondary-button">
+            Start Over
+          </button>
+          <button 
+            onClick={() => {
+              // Force a reflow before printing to ensure layout is correct
+              document.body.offsetHeight;
+              window.print();
+            }} 
+            className="print-button"
+          >
+            Print Poster
+          </button>
+          <p className="print-note">
+            For best results, use "Print to PDF" in your browser's print dialog
+          </p>
+        </div>
+      </div>
+      
+      <div className="poster">
+        <div className="poster-header">
+          <div className="app-header-content">
+            {appData.iconUrl && (
+              <img src={appData.iconUrl} alt={`${appData.name} icon`} className="app-icon" />
+            )}
+            <div className="app-text">
+              <h1 className="app-title">{appData.name}</h1>
+              <p className="app-tagline">{appData.tagline}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="screenshot-container">
+          <div 
+            className={`iphone-frame ${frameStyle}`}
+            style={{ 
+              width: `${frameDimensions.width}px`, 
+              height: `${frameDimensions.height}px`,
+              padding: `${getPaddingValue()}px`
+            }}
+          >
+            <div 
+              className="iphone-screen"
+              style={{
+                borderRadius: cornerStyle === 'square' ? '0' : 
+                            cornerStyle === 'slight' ? '8px' : 
+                            cornerStyle === 'rounded' ? '16px' :
+                            cornerStyle === 'match' ? `${35 - getPaddingValue()}px` : '16px'
+              }}
+            >
+              {appData.screenshot ? (
+                <img 
+                  src={appData.screenshot} 
+                  alt={`${appData.name} screenshot`}
+                  onError={(e) => {
+                    console.error('Failed to load screenshot:', appData.screenshot)
+                    e.target.style.display = 'none'
+                  }}
+                  onLoad={handleImageLoad}
+                />
+              ) : (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+                  <p>No screenshot available</p>
+                  <p style={{ fontSize: '12px' }}>Check console for debug info</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        <div className="poster-footer">
+          <div className="company-info">
+            {appData.companyLogo && (
+              <img src={appData.companyLogo} alt="Company logo" className="company-logo" />
+            )}
+          </div>
+          <div className="qr-container">
+            {qrCodeUrl && (
+              <>
+                <img src={qrCodeUrl} alt="QR Code" className="qr-code" />
+                <img 
+                  src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" 
+                  alt="Download on the App Store" 
+                  className="app-store-badge"
+                />
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
+  )
+}
+
+export default Poster

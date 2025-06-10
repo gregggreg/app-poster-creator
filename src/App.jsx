@@ -1,0 +1,134 @@
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import Poster from './Poster'
+import './App.css'
+
+function Home() {
+  const [url, setUrl] = useState('')
+  const [screenshotUrl, setScreenshotUrl] = useState('')
+  const [logoUrl, setLogoUrl] = useState(() => {
+    return localStorage.getItem('companyLogoUrl') || ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+  
+  useEffect(() => {
+    document.title = 'App Store Poster Creator'
+  }, [])
+
+  const extractAppId = (url) => {
+    const match = url.match(/id(\d+)/)
+    return match ? match[1] : null
+  }
+
+  const handleLogoUrlChange = (e) => {
+    const newLogoUrl = e.target.value
+    setLogoUrl(newLogoUrl)
+    if (newLogoUrl) {
+      localStorage.setItem('companyLogoUrl', newLogoUrl)
+    } else {
+      localStorage.removeItem('companyLogoUrl')
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      const appId = extractAppId(url)
+      if (!appId) {
+        throw new Error('Invalid App Store URL')
+      }
+
+      const response = await axios.get(`https://itunes.apple.com/lookup?id=${appId}`)
+      const appData = response.data.results[0]
+      
+      if (!appData) {
+        throw new Error('App not found')
+      }
+
+      console.log('App data:', appData)
+      
+      // Get the first iPhone screenshot, checking multiple possible fields
+      let screenshot = null
+      if (appData.screenshotUrls && appData.screenshotUrls.length > 0) {
+        screenshot = appData.screenshotUrls[0]
+      } else if (appData.ipadScreenshotUrls && appData.ipadScreenshotUrls.length > 0) {
+        screenshot = appData.ipadScreenshotUrls[0]
+      }
+      
+      const posterData = {
+        name: appData.trackName,
+        tagline: appData.description.split('.')[0],
+        screenshot: screenshotUrl || screenshot,
+        appStoreUrl: url,
+        iconUrl: appData.artworkUrl512,
+        sellerName: appData.sellerName,
+        companyLogo: logoUrl
+      }
+      
+      console.log('Poster data:', posterData)
+      console.log('Screenshot URL:', screenshot)
+
+      navigate('/poster', { state: posterData })
+    } catch (err) {
+      setError(err.message || 'Failed to fetch app data')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="container">
+      <h1>App Store Poster Creator</h1>
+      <p className="subtitle">Create beautiful posters for your iOS apps</p>
+      
+      <form onSubmit={handleSubmit} className="url-form">
+        <input
+          type="url"
+          placeholder="Enter App Store URL (e.g., https://apps.apple.com/app/id123456789)"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          className="url-input"
+          required
+        />
+        <input
+          type="url"
+          placeholder="Alternative screenshot URL (optional)"
+          value={screenshotUrl}
+          onChange={(e) => setScreenshotUrl(e.target.value)}
+          className="url-input"
+        />
+        <input
+          type="url"
+          placeholder="Company logo URL (optional)"
+          value={logoUrl}
+          onChange={handleLogoUrlChange}
+          className="url-input"
+        />
+        <button type="submit" disabled={loading} className="submit-button">
+          {loading ? 'Loading...' : 'Create Poster'}
+        </button>
+      </form>
+      
+      {error && <p className="error">{error}</p>}
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/poster" element={<Poster />} />
+      </Routes>
+    </Router>
+  )
+}
+
+export default App
