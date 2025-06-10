@@ -9,8 +9,8 @@ function Poster() {
   const [qrCodeUrl, setQrCodeUrl] = useState('')
   const [imageAspectRatio, setImageAspectRatio] = useState(null)
   const [frameStyle, setFrameStyle] = useState('none')
-  const [framePadding, setFramePadding] = useState('normal')
-  const [cornerStyle, setCornerStyle] = useState('rounded')
+  const [framePadding, setFramePadding] = useState('minimal')
+  const [cornerStyle, setCornerStyle] = useState('match')
   const appData = location.state
 
   useEffect(() => {

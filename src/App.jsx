@@ -44,7 +44,22 @@ function Home() {
         throw new Error('Invalid App Store URL')
       }
 
-      const response = await axios.get(`https://itunes.apple.com/lookup?id=${appId}`)
+      // Use a CORS proxy for production deployments
+      // The iTunes API doesn't support CORS from browsers
+      const apiUrl = `https://itunes.apple.com/lookup?id=${appId}`;
+      
+      let response;
+      if (window.location.hostname === 'localhost') {
+        // Direct call in development
+        response = await axios.get(apiUrl);
+      } else {
+        // Use proxy in production
+        response = await axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`);
+        // AllOrigins wraps the response
+        if (response.data.contents) {
+          response.data = JSON.parse(response.data.contents);
+        }
+      }
       const appData = response.data.results[0]
       
       if (!appData) {
