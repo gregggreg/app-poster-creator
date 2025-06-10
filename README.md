@@ -7,11 +7,13 @@ Create beautiful, print-ready promotional posters for iOS apps with customizable
 ## Features
 
 - 🎨 **Professional Design** - Generate 8.5x11" print-ready posters
-- 📱 **Customizable iPhone Frames** - Choose between no notch, classic notch, or Dynamic Island
-- 🔄 **Flexible Layouts** - Adjust padding and corner styles to match your screenshot
+- 📱 **Device Support** - iPhone and iPad with automatic portrait/landscape orientation detection
+- 🖼️ **Flexible Frame Options** - No frame, device frame, classic notch, or Dynamic Island
+- 🔄 **Screenshot Navigation** - Browse through all available app screenshots
+- 🎯 **Smart Layout** - Automatic frame sizing based on screenshot aspect ratio
 - 🏢 **Company Branding** - Add your company logo with persistent storage
-- 📸 **Smart Screenshot Handling** - Automatically fetches app screenshots from the App Store
-- 🔗 **QR Code Generation** - Include scannable QR codes linking to your App Store page
+- ✏️ **Customizable Content** - Edit app tagline directly in the poster
+- 🔗 **QR Code Generation** - Include scannable QR codes with App Store badge
 - 🖨️ **Print Optimized** - Clean PDF output across different browsers
 
 ## Demo
@@ -47,16 +49,20 @@ The app will be available at `http://localhost:5173`
 
 1. **Enter App Store URL**: Paste any Apple App Store URL (e.g., `https://apps.apple.com/app/id123456789`)
 
-2. **Optional Customization**:
-   - Add an alternative screenshot URL if the app doesn't have one
-   - Include your company logo URL (saved for future use)
-
-3. **Adjust Frame Settings**:
-   - **Frame Style**: No Notch, Classic Notch, or Dynamic Island
+2. **Customize Your Poster**:
+   - **Device Type**: Choose between iPhone or iPad
+   - **Frame Style**: 
+     - No Frame (screenshot only)
+     - Device Frame
+     - Device Frame with Notch (iPhone only)
+     - Device Frame with Dynamic Island (iPhone only)
    - **Content Padding**: Minimal (12px), Normal (16px), or Comfortable (20px)
    - **Screen Corners**: Square, Slight (8px), Rounded (16px), or Match Frame
+   - **Screenshot**: Navigate through available screenshots or provide custom URL
+   - **Tagline**: Edit the app description shown on the poster
+   - **Company Logo**: Add your company logo URL (saved for future use)
 
-4. **Print or Save**: Click "Print Poster" to generate a PDF
+3. **Print or Save**: Click "Print Poster" to generate a PDF
 
 ## API Integration
 
