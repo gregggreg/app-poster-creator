@@ -1,12 +1,159 @@
-# React + Vite
+# App Store Poster Creator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Create beautiful, print-ready promotional posters for iOS apps with customizable iPhone frames, QR codes, and professional layouts.
 
-Currently, two official plugins are available:
+![App Store Poster Creator Preview](https://via.placeholder.com/800x400)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- 🎨 **Professional Design** - Generate 8.5x11" print-ready posters
+- 📱 **Customizable iPhone Frames** - Choose between no notch, classic notch, or Dynamic Island
+- 🔄 **Flexible Layouts** - Adjust padding and corner styles to match your screenshot
+- 🏢 **Company Branding** - Add your company logo with persistent storage
+- 📸 **Smart Screenshot Handling** - Automatically fetches app screenshots from the App Store
+- 🔗 **QR Code Generation** - Include scannable QR codes linking to your App Store page
+- 🖨️ **Print Optimized** - Clean PDF output across different browsers
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Demo
+
+Try it live at [https://app-poster.com](https://app-poster.com)
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 16.0 or higher
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/app-poster-creator.git
+
+# Navigate to the project directory
+cd app-poster-creator
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+## Usage
+
+1. **Enter App Store URL**: Paste any Apple App Store URL (e.g., `https://apps.apple.com/app/id123456789`)
+
+2. **Optional Customization**:
+   - Add an alternative screenshot URL if the app doesn't have one
+   - Include your company logo URL (saved for future use)
+
+3. **Adjust Frame Settings**:
+   - **Frame Style**: No Notch, Classic Notch, or Dynamic Island
+   - **Content Padding**: Minimal (12px), Normal (16px), or Comfortable (20px)
+   - **Screen Corners**: Square, Slight (8px), Rounded (16px), or Match Frame
+
+4. **Print or Save**: Click "Print Poster" to generate a PDF
+
+## API Integration
+
+The app uses the iTunes Search API to fetch app metadata:
+
+```javascript
+https://itunes.apple.com/lookup?id={appId}
+```
+
+No API key is required for basic usage.
+
+## Browser Compatibility
+
+- ✅ Chrome (recommended)
+- ✅ Firefox
+- ✅ Safari
+- ✅ Edge
+
+### Printing Tips
+
+- **Chrome**: Use File → Print → Save as PDF
+- **Safari**: Use File → Print → PDF button (bottom-left)
+- **Firefox**: Best consistency for PDF rendering
+
+## Development
+
+### Project Structure
+
+```
+app-poster-creator/
+├── src/
+│   ├── App.jsx          # Main app component and routing
+│   ├── Poster.jsx       # Poster generation component
+│   ├── App.css          # Home page styles
+│   ├── Poster.css       # Poster and print styles
+│   └── index.css        # Global styles
+├── public/
+└── package.json
+```
+
+### Building for Production
+
+```bash
+# Create production build
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file for custom configuration:
+
+```env
+VITE_APP_TITLE=App Store Poster Creator
+VITE_DEFAULT_PADDING=normal
+VITE_DEFAULT_CORNER_STYLE=rounded
+```
+
+### Customization
+
+You can customize the poster layout by modifying:
+
+- Frame dimensions in `Poster.css`
+- Default options in `Poster.jsx`
+- Print margins and layout in the `@media print` section
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- App data provided by [Apple iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/)
+- QR codes generated with [qrcode](https://www.npmjs.com/package/qrcode)
+- Built with [React](https://react.dev/) and [Vite](https://vitejs.dev/)
+
+## Support
+
+If you encounter any issues or have suggestions:
+
+- Open an issue on [GitHub](https://github.com/gregggreg/app-poster-creator/issues)
+- Contact: greg <at> cromulentlabs.com
+
+---
+
+Made with ❤️ for iOS developers and marketers
